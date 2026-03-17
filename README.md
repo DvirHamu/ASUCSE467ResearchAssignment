@@ -106,7 +106,19 @@ Add two lines right after it:
 pythonldm_stable = StableDiffusionPipeline.from_pretrained(pretrained_diffusion_path).to("cuda:0")
 
 
-ldm_stable.load_lora_weights("/app/DiffPrivate/fine_tuned_lora")
-
+pythonldm_stable.load_lora_weights("/app/DiffPrivate/fine_tuned_lora/checkpoint-1000")
 
 ldm_stable.fuse_lora()
+
+
+```python3 -c "
+import torch
+from safetensors.torch import load_file, save_file
+
+# Load the new format
+weights = load_file('/app/DiffPrivate/fine_tuned_lora/pytorch_lora_weights.safetensors')
+
+# Print keys to see what format they're in
+for k in list(weights.keys())[:5]:
+    print(k)
+"```
