@@ -84,3 +84,29 @@ And you can download onto your computer
 <img width="256" height="256" alt="image7" src="https://github.com/user-attachments/assets/e6123353-ae9c-47b6-aca8-8b7ecc31c312" />
 
 
+
+
+ The base model stays as Manojb/stable-diffusion-2-1-base. The LoRA weights are loaded ON TOP of it in the code.
+
+Edit run-dpp.py to load the LoRA weights
+
+
+bashnano /app/DiffPrivate/run-dpp.py
+
+
+Find this line (around line 20):
+
+
+pythonldm_stable = StableDiffusionPipeline.from_pretrained(pretrained_diffusion_path).to("cuda:0")
+
+
+Add two lines right after it:
+
+
+pythonldm_stable = StableDiffusionPipeline.from_pretrained(pretrained_diffusion_path).to("cuda:0")
+
+
+ldm_stable.load_lora_weights("/app/DiffPrivate/fine_tuned_lora")
+
+
+ldm_stable.fuse_lora()
