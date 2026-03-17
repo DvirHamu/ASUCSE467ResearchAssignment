@@ -112,13 +112,73 @@ ldm_stable.fuse_lora()
 
 
 ```python3 -c "
-import torch
 from safetensors.torch import load_file, save_file
 
-# Load the new format
 weights = load_file('/app/DiffPrivate/fine_tuned_lora/pytorch_lora_weights.safetensors')
 
-# Print keys to see what format they're in
-for k in list(weights.keys())[:5]:
+new_weights = {}
+for k, v in weights.items():
+    # Convert new format to old format
+    # unet.down_blocks.0.attentions.0.transformer_blocks.0.attn1.to_k.lora_A.weight
+    # -> unet_down_blocks_0_attentions_0_transformer_blocks_0_attn1_to_k_lora.down.weight
+    new_key = k.replace('unet.', 'unet_')
+    new_key = new_key.replace('.lora_A.weight', '_lora.down.weight')
+    new_key = new_key.replace('.lora_B.weight', '_lora.up.weight')
+    new_key = new_key.replace('.', '_').replace('_lora_down_weight', '_lora.down.weight').replace('_lora_up_weight', '_lora.up.weight')
+    new_weights[new_key] = v
+
+save_file(new_weights, '/app/DiffPrivate/fine_tuned_lora/pytorch_lora_weights_converted.safetensors')
+
+# Print first 3 converted keys to verify
+for k in list(new_weights.keys())[:3]:
     print(k)
+print('Done!')
 "```
+
+
+```
+ldm_stable = StableDiffusionPipeline.from_pretrained(pretrained_diffusion_path).to("cuda:0")
+ldm_stable.load_lora_weights("/app/DiffPrivate/fine_tuned_lora/pytorch_lora_weights.safetensors")
+ldm_stable.fuse_lora()
+ldm_stable.scheduler = DDIMScheduler.from_config(ldm_stable.scheduler.config)```
+
+
+update config/config.yaml file
+
+
+```model:
+  attacker_model: "irse50"
+  victim_model: "irse50"
+  list_attacker_models: ["irse50"]
+  ensemble: false
+  ensemble_mode: "mean"
+  lora_path: null```
+
+
+```2. Update run-dpp.py
+
+Right now your script always loads LoRA here:
+
+from safetensors.torch import load_file
+lora_state = load_file("/app/DiffPrivate/fine_tuned_lora/pytorch_lora_weights.safetensors")
+lora_state = {k.replace("unet.", ""): v for k, v in lora_state.items()}
+ldm_stable.unet.load_state_dict(lora_state, strict=False)
+
+Replace that whole section with this:
+
+# Optional LoRA loading
+if cfg.model.lora_path is not None:
+    from safetensors.torch import load_file
+
+    lora_file = os.path.join(cfg.model.lora_path, "pytorch_lora_weights.safetensors")
+    print(f"Loading LoRA weights from {lora_file}")
+
+    lora_state = load_file(lora_file)
+    lora_state = {k.replace("unet.", ""): v for k, v in lora_state.items()}
+    ldm_stable.unet.load_state_dict(lora_state, strict=False)
+```
+
+
+```chmod +x overnight_compare.sh
+nohup ./overnight_compare.sh > overnight_master.log 2>&1 &
+tail -f overnight_master.log```
