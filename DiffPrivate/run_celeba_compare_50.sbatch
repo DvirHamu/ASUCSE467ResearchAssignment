@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --job-name=celeba_diffprivate
+
+#SBATCH --partition=public
+
+#SBATCH --gres=gpu:a100:1
+
+#SBATCH --cpus-per-task=4
+
+#SBATCH --mem=32G
+
+#SBATCH --time=08:00:00
+
+#SBATCH --output=slurm-%j.out
+
+#SBATCH --error=slurm-%j.err
+
+
+
+apptainer exec --nv --bind /scratch/dhamu/CSE469/DiffPrivate:/app/DiffPrivate diffprivate_latest.sif bash -c "cd /app/DiffPrivate && bash celeba_compare_50.sh"
