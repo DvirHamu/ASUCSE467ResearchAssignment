@@ -1,0 +1,85 @@
+
+=== BASELINE SUMMARY ===
+Images: 105
+Avg id_loss: 0.433034
+Avg ID_victim_distance: 0.375320
+Avg ID_dist_to_target: 0.363080
+
+Per-model average distances:
+  cur_face: 0.252579
+  facenet: 0.176149
+  ir152: 0.210372
+  mobile_face: 0.190629
+
+Per-model protection rates:
+  cur_face: 0.000000
+  facenet: 0.019048
+  ir152: 0.000000
+  mobile_face: 0.000000
+
+=== FINETUNED SUMMARY ===
+Images: 100
+Avg id_loss: 0.435293
+Avg ID_victim_distance: 0.378062
+Avg ID_dist_to_target: N/A
+
+Per-model average distances:
+  cur_face: 0.252572
+  facenet: 0.178729
+  ir152: 0.212334
+  mobile_face: 0.189219
+
+Per-model protection rates:
+  cur_face: 0.000000
+  facenet: 0.010000
+  ir152: 0.000000
+  mobile_face: 0.000000
+
+=== COMPARISON ===
+Shared images: 100
+Only in baseline: 0
+Only in finetuned: 0
+
+Avg delta ID_victim_distance (finetuned - baseline): 0.001872
+Avg delta id_loss (finetuned - baseline): 0.001375
+
+ID_victim_distance change counts:
+  Improved: 50
+  Worsened: 50
+  Same: 0
+
+Per-model distance delta averages (finetuned - baseline):
+  cur_face: 0.000649
+  facenet: 0.001340
+  ir152: 0.001151
+  mobile_face: 0.000969
+
+Per-model protection rate comparison:
+  cur_face: baseline=0.000000  finetuned=0.000000  delta=0.000000
+  facenet: baseline=0.020000  finetuned=0.010000  delta=-0.010000
+  ir152: baseline=0.000000  finetuned=0.000000  delta=0.000000
+  mobile_face: baseline=0.000000  finetuned=0.000000  delta=0.000000
+
+Top 10 images with biggest improvement in ID_victim_distance:
+  681.jpg: delta=0.144215  baseline=0.256701  finetuned=0.400916
+  5.jpg: delta=0.029112  baseline=0.297138  finetuned=0.326250
+  932.jpg: delta=0.028700  baseline=0.373281  finetuned=0.401981
+  284.jpg: delta=0.026110  baseline=0.225091  finetuned=0.251201
+  962.jpg: delta=0.017340  baseline=0.372027  finetuned=0.389367
+  1077.jpg: delta=0.016618  baseline=0.342731  finetuned=0.359349
+  150.jpg: delta=0.012239  baseline=0.381393  finetuned=0.393633
+  1129.jpg: delta=0.011095  baseline=0.289901  finetuned=0.300997
+  51.jpg: delta=0.008819  baseline=0.347307  finetuned=0.356126
+  176.jpg: delta=0.008801  baseline=0.346485  finetuned=0.355286
+
+Top 10 images with biggest drop in ID_victim_distance:
+  1158.jpg: delta=-0.034566  baseline=0.379832  finetuned=0.345265
+  843.jpg: delta=-0.029255  baseline=0.343787  finetuned=0.314532
+  1056.jpg: delta=-0.027985  baseline=0.388770  finetuned=0.360785
+  298.jpg: delta=-0.010746  baseline=0.386611  finetuned=0.375865
+  1202.jpg: delta=-0.009978  baseline=0.401404  finetuned=0.391426
+  160.jpg: delta=-0.009801  baseline=0.307328  finetuned=0.297527
+  923.jpg: delta=-0.009090  baseline=0.302700  finetuned=0.293610
+  984.jpg: delta=-0.009084  baseline=0.365660  finetuned=0.356577
+  437.jpg: delta=-0.008470  baseline=0.354891  finetuned=0.346421
+  1426.jpg: delta=-0.008108  baseline=0.369847  finetuned=0.361738
