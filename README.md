@@ -5,8 +5,8 @@
 Go to scratch directory and open terminal
 
 ```
-mkdir CSE469
-cd CSE469
+mkdir CSE467
+cd CSE467
 git clone https://github.com/minha12/DiffPrivate
 ```
 We’ll be using apptainer instead of docker to run this
