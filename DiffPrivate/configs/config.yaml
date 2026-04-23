@@ -5,7 +5,7 @@ defaults:
 # Paths and directories
 paths:
   save_dir: "data/output"
-  images_root: "./data/demo/images"
+  images_root: "./data/images"
   target_image: "./data/target_imgs/00187.jpg"
   pretrained_diffusion_path: "Manojb/stable-diffusion-2-1-base"
 # Model settings
@@ -15,7 +15,7 @@ model:
   list_attacker_models: ["irse50"]
   ensemble: false
   ensemble_mode: "mean"
-  lora_path: null
+  lora_path: "./fine_tuned_lora"
 # Attack parameters
 attack:
   targeted_attack: false
@@ -38,10 +38,10 @@ attack:
 
 # Diffusion settings
 diffusion:
-  diffusion_steps: 20
-  start_step: 15
-  iterations: 10
-  res: 256
+  diffusion_steps: 10
+  start_step: 7
+  iterations: 5
+  res: 128
   is_apply_mask: true
   is_hard_mask: false
   guidance: 2.5
