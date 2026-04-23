@@ -636,3 +636,66 @@ diffusion:
 **`No module named 'src'`** — make sure you cloned this repo (not the original), as the `src/` folder is included here.
 
 **`Primary config directory not found`** — make sure the config folder is named `configs` (not `config`). This repo has it correctly named.
+
+
+---
+
+## Running the Web App
+
+We built a simple web interface on top of DiffPrivate so anyone can protect their face images without touching the command line. It runs locally on your machine and is accessible from any device on the same WiFi network (phone, tablet, laptop).
+
+---
+
+### How It Works
+
+1. A **Flask server** (`app.py`) loads the Stable Diffusion model + LoRA weights once at startup
+2. The server exposes a `/protect` endpoint that accepts an image upload
+3. When an image is submitted, it runs the full DiffPrivate pipeline on it and returns the privacy-protected result
+4. The **web frontend** (`templates/index.html`) provides a clean UI — upload, preview, process, download — all in the browser
+
+---
+
+### Setup (one time)
+
+Make sure you're in the `diffprivate` conda environment:
+
+```bash
+conda activate diffprivate
+cd "C:\Users\along\OneDrive\Documents\CSE 467\ASUCSE467ResearchAssignment\DiffPrivate"
+pip install flask
+```
+
+---
+
+### Running the Server
+
+```bash
+python app.py
+```
+
+The model loads once at startup (takes ~30 seconds). You'll see `Model ready.` when it's done.
+
+---
+
+### Using the App
+
+1. Open your browser and go to `http://localhost:5000`
+2. Drag & drop a face photo onto the upload area (or click to browse)
+3. Click **Protect Image**
+4. Wait a few minutes while DiffPrivate processes the image
+5. The protected image appears on screen — click **Download Protected Image** to save it
+
+That's it. No command line, no config files, no Python knowledge needed.
+
+---
+
+### Access From Other Devices (Same WiFi)
+
+Find your local IP:
+```bash
+ipconfig
+```
+Look for `IPv4 Address` (e.g. `192.168.1.42`). Then on any device on the same network, open:
+```
+http://192.168.1.42:5000
+```
