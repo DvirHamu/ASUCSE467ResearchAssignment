@@ -529,3 +529,110 @@ DiffPrivate/
 - The `protected` field in attack logs is **unreliable** (often all zeros); we use `ID_victim_distance` as the primary metric throughout.
 - Base model `stabilityai/stable-diffusion-2-base` from the original repo returns a 404 — we use `Manojb/stable-diffusion-2-1-base` as a drop-in replacement.
 
+
+---
+
+## Running Locally (Windows + Consumer GPU)
+
+This section explains how to run DiffPrivate on a local Windows machine with a consumer NVIDIA GPU (tested on RTX 4060 Laptop 8GB).
+
+> **Note:** The original project requires 16GB+ VRAM. We made adjustments to fit on 8GB by reducing resolution and diffusion steps. Output quality is slightly lower but the privacy protection still works.
+
+---
+
+### Requirements
+
+- Windows 10/11
+- NVIDIA GPU (8GB+ VRAM recommended)
+- [Anaconda](https://www.anaconda.com/download) installed
+- Git installed
+
+---
+
+### Step 1 — Clone the Repo
+
+```bash
+git clone https://github.com/DvirHamu/ASUCSE467ResearchAssignment.git
+cd ASUCSE467ResearchAssignment/DiffPrivate
+```
+
+---
+
+### Step 2 — Create the Conda Environment
+
+Open **Anaconda Prompt** and run:
+
+```bash
+cd "path\to\ASUCSE467ResearchAssignment\DiffPrivate"
+conda env create -f environment.yml
+conda activate diffprivate
+pip install accelerate
+```
+
+---
+
+### Step 3 — Prepare Demo Images
+
+```bash
+cd data
+tar -xf demo.zip
+cd ..
+```
+
+The images will extract to `data/images/`. The config is already set to point there.
+
+---
+
+### Step 4 — Configuration
+
+The `configs/config.yaml` has been pre-configured for local use:
+
+- `images_root` → `./data/images`
+- `lora_path` → `./fine_tuned_lora` (LoRA v2 weights)
+- `res` → `128` (reduced from 256 to fit in 8GB VRAM)
+- `diffusion_steps` → `10` (reduced from 20)
+
+No changes needed — just run.
+
+---
+
+### Step 5 — Run
+
+```bash
+python run-dpp.py
+```
+
+The first run will automatically download:
+- Stable Diffusion model weights (~5GB, cached to `~/.cache/huggingface`)
+- Face recognition model weights (~800MB total, saved to `model-weights/`)
+
+Subsequent runs will be much faster since everything is cached.
+
+---
+
+### Step 6 — View Results
+
+Output images are saved to `data/output/`. Each processed image produces:
+
+- `<name>_adv_image.png` — the privacy-protected image
+- `<name>_diff_image_ATKSuccess.png` — side-by-side original vs protected
+- `<name>_diff_absolute.png` — absolute pixel difference
+- `attack_log.json` — identity distances and protection metrics
+
+---
+
+### Troubleshooting
+
+**CUDA out of memory** — reduce resolution further in `configs/config.yaml`:
+```yaml
+diffusion:
+  res: 96
+  diffusion_steps: 8
+  start_step: 5
+```
+
+**Black output images** — caused by fp16 NaN values. Make sure the model is loaded in fp32 (default in `run-dpp.py` — do not add `torch_dtype=torch.float16`).
+
+**`No module named 'src'`** — make sure you cloned this repo (not the original), as the `src/` folder is included here.
+
+**`Primary config directory not found`** — make sure the config folder is named `configs` (not `config`). This repo has it correctly named.
