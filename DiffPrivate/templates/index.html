@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiffPrivate</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f0f0f0; display: flex; justify-content: center; padding: 40px 16px; }
+    .card { background: white; border-radius: 12px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }
+    p.sub { color: #666; font-size: 0.9rem; margin-bottom: 24px; }
+    .drop-zone { border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #555; }
+    .drop-zone input { display: none; }
+    #preview { max-width: 100%; border-radius: 8px; margin-top: 16px; display: none; }
+    button { margin-top: 20px; width: 100%; padding: 12px; background: #111; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+    button:disabled { background: #999; cursor: not-allowed; }
+    #status { margin-top: 16px; font-size: 0.9rem; color: #555; text-align: center; }
+    #result { margin-top: 24px; display: none; }
+    #result img { max-width: 100%; border-radius: 8px; }
+    #download { background: #1a7f37; margin-top: 12px; display: block; text-align: center; padding: 12px; color: white; border-radius: 8px; text-decoration: none; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>DiffPrivate</h1>
+    <p class="sub">Upload a face image to generate a privacy-protected version.</p>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/png,image/jpeg">
+      <span id="dropLabel">Click or drag & drop an image here</span>
+      <img id="preview">
+    </div>
+
+    <button id="submitBtn" disabled>Protect Image</button>
+    <div id="status"></div>
+
+    <div id="result">
+      <p style="margin-bottom:8px;font-weight:600;">Protected Image:</p>
+      <img id="resultImg">
+      <a id="download" download="protected.png">Download Protected Image</a>
+    </div>
+  </div>
+
+  <script>
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const preview = document.getElementById("preview");
+    const dropLabel = document.getElementById("dropLabel");
+    const submitBtn = document.getElementById("submitBtn");
+    const status = document.getElementById("status");
+    const result = document.getElementById("result");
+    const resultImg = document.getElementById("resultImg");
+    const download = document.getElementById("download");
+
+    let selectedFile = null;
+
+    dropZone.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("dragover"); });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener("change", () => handleFile(fileInput.files[0]));
+
+    function handleFile(file) {
+      if (!file) return;
+      selectedFile = file;
+      dropLabel.style.display = "none";
+      preview.style.display = "block";
+      preview.src = URL.createObjectURL(file);
+      submitBtn.disabled = false;
+      result.style.display = "none";
+      status.textContent = "";
+    }
+
+    submitBtn.addEventListener("click", async () => {
+      if (!selectedFile) return;
+      submitBtn.disabled = true;
+      status.textContent = "Processing... this may take a few minutes.";
+      result.style.display = "none";
+
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+
+      try {
+        const res = await fetch("/protect", { method: "POST", body: formData });
+        if (!res.ok) {
+          const err = await res.json();
+          status.textContent = "Error: " + err.error;
+        } else {
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          resultImg.src = url;
+          download.href = url;
+          result.style.display = "block";
+          status.textContent = "Done!";
+        }
+      } catch (e) {
+        status.textContent = "Request failed: " + e.message;
+      }
+      submitBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 from diffusers import StableDiffusionPipeline, DDIMScheduler
+import torch
 from src.attCtr import AttentionControlEdit
 import src.diffprivate_pert as diffprivate_pert
 from PIL import Image
