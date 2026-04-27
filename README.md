@@ -1,5 +1,11 @@
 # ASUCSE467ResearchAssignment
 
+Natural Datasets, locally run results, attack logs and weights not included in the repository due to space constraints can be found in [this google drive folder](https://drive.google.com/drive/folders/1mmpZwrlU040ifP4AaxqF0VLRftvv2WI6).
+
+
+---
+
+
 <img width="1918" height="834" alt="image6" src="https://github.com/user-attachments/assets/0862ee78-8853-4798-8578-68d4c33f19f4" />
 
 Go to scratch directory and open terminal
